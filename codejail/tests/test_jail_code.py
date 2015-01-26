@@ -1,5 +1,6 @@
 """Test jail_code.py"""
 
+import json
 import os
 import os.path
 import shutil
@@ -75,6 +76,27 @@ class TestFeatures(JailCodeHelpers, unittest.TestCase):
         )
         self.assertResultOk(res)
         self.assertEqual(res.stdout, "36.5\n")
+
+    def test_stdin_can_be_large_and_binary(self):
+        res = jailpy(
+            code="import sys; print sum(ord(c) for c in sys.stdin.read())",
+            stdin="".join(chr(i) for i in range(256))*100,
+        )
+        self.assertResultOk(res)
+        self.assertEqual(res.stdout, "3264000\n")
+
+    def test_stdout_can_be_large_and_binary(self):
+        res = jailpy(
+            code="""
+                import sys
+                sys.stdout.write("".join(chr(i) for i in range(256))*100)
+            """
+        )
+        self.assertResultOk(res)
+        self.assertEqual(
+            res.stdout,
+            "".join(chr(i) for i in range(256))*100
+        )
 
     def test_files_are_copied(self):
         res = jailpy(
