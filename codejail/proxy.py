@@ -32,7 +32,6 @@ def run_subprocess_through_proxy(*args, **kwargs):
         # the stdin and stdout unbuffered.
         PROXY_PROCESS = subprocess.Popen(
             [sys.executable, '-u', proxy_main_py],
-            bufsize=1,
             stdin=subprocess.PIPE,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,

@@ -80,22 +80,37 @@ class TestFeatures(JailCodeHelpers, unittest.TestCase):
     def test_stdin_can_be_large_and_binary(self):
         res = jailpy(
             code="import sys; print sum(ord(c) for c in sys.stdin.read())",
-            stdin="".join(chr(i) for i in range(256))*100,
+            stdin="".join(chr(i) for i in range(256))*10000,
         )
         self.assertResultOk(res)
-        self.assertEqual(res.stdout, "3264000\n")
+        self.assertEqual(res.stdout, "326400000\n")
 
     def test_stdout_can_be_large_and_binary(self):
         res = jailpy(
             code="""
                 import sys
-                sys.stdout.write("".join(chr(i) for i in range(256))*100)
+                sys.stdout.write("".join(chr(i) for i in range(256))*10000)
             """
         )
         self.assertResultOk(res)
         self.assertEqual(
             res.stdout,
-            "".join(chr(i) for i in range(256))*100
+            "".join(chr(i) for i in range(256))*10000
+        )
+
+    def test_stderr_can_be_large_and_binary(self):
+        res = jailpy(
+            code="""
+                import sys
+                sys.stderr.write("".join(chr(i) for i in range(256))*10000)
+                sys.stdout.write("OK!")
+            """
+        )
+        self.assertEqual(res.status, 0)
+        self.assertEqual(res.stdout, "OK!")
+        self.assertEqual(
+            res.stderr,
+            "".join(chr(i) for i in range(256))*10000
         )
 
     def test_files_are_copied(self):
