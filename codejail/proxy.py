@@ -55,9 +55,10 @@ def proxy_main():
 
     It does this:
 
-        * Reads a JSON object from stdin: [args, kwargs]
+        * Reads a line from stdin with the repr of a tuple: (args, kwargs)
         * Calls :ref:`run_subprocess` with *args, **kwargs
-        * Returns the status, stdout, and stderr as a JSON object on stdout.
+        * Writes one line to stdout: the repr of the return value from
+          `run_subprocess`: (pid, status, stdout, stderr).
 
     The process ends when its stdin is closed.
 
